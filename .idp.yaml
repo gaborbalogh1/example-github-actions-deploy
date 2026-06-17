@@ -1,0 +1,33 @@
+kind: blueprint
+name: "Custom GitHub Actions Deploy"
+description: "Generic deployment blueprint using GitHub Actions workflow_dispatch. Adapt the deploy.yml to any tool — AWS CLI, kubectl, Azure CLI, custom scripts."
+category: devops
+
+deploy:
+  type: custom
+  path: ./
+  pipeline: github-actions
+  entry: deploy.yml
+  branch: main
+  command: "gh workflow run deploy.yml --field environment={environment} --field service_name={service_name}"
+
+parameters:
+  - name: service_name
+    label: Service Name
+    type: string
+    required: true
+  - name: environment
+    label: Environment
+    type: select
+    required: true
+    options: [{ value: dev, label: Dev }, { value: test, label: Test }, { value: prod, label: Prod }]
+    default: dev
+  - name: image_tag
+    label: Image Tag
+    type: string
+    default: latest
+
+requires:
+  - kind: secret
+    name: DEPLOY_TOKEN
+    description: "Token or credential your deploy script needs — stored as GitHub secret"
