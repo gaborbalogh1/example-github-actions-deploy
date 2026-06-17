@@ -1,0 +1,41 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, test, prod]
+        default: dev
+        description: Target environment
+      service_name:
+        type: string
+        required: true
+        description: Service / release name
+      image_tag:
+        type: string
+        default: latest
+        description: Container image tag
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre-flight check
+        run: |
+          echo "Service:     ${{ inputs.service_name }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Image tag:   ${{ inputs.image_tag }}"
+
+      - name: Deploy
+        run: |
+          # Replace this step with your actual deploy command:
+          # - aws ecs update-service ...
+          # - kubectl set image ...
+          # - az webapp config container set ...
+          # - ./deploy.ps1 ...
+          echo "Deploying ${{ inputs.service_name }}:${{ inputs.image_tag }} to ${{ inputs.environment }}"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
